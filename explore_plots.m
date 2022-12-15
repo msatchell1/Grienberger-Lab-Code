@@ -172,3 +172,14 @@ legend();
 % % Compare dF/F with raw fl trace
 % rawfl_nrns = S_all.datasetorig(:,S_all.listofneurons);
 % plot(rawfl_nrns(:,i)./5000, "DisplayName", 'Cell Raw Fl')
+
+
+%% SCE Events and velocity
+
+figure;
+hold on;
+plot(vel_exp_mf, 'DisplayName', 'velocity (V)');
+plot(S_all.isSCE.*S_all.num_act_nrns_perframe./40, 'DisplayName', 'isSCE');
+title('SCEs and Velocity');
+xlabel('Frame')
+legend();

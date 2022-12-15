@@ -79,10 +79,12 @@ num_bins = size(S_all.Running,1); % Number of bins each lap is tiled into.
 S_all = noise_dist(S_all, 0); % Calculate standard deviations for the noise 
 % of the dF/F traces of each neuron. 
 
+S_all = detect_SCEs(S_all); % Detect synchronous calcium events and store the data in S_all.
+
 
 
 %% Save data
-
-save([save_dir, filesep, 'S_all.mat'], 'S_all', '-v7.3') % Save ws and fl data.
-% Necessary to use version 7.3 to save data larger than 2GB.
-save([save_dir, filesep, 'control.mat'], 'control', '-v7.3') % Save lap control data.
+% 
+% save([save_dir, filesep, 'S_all.mat'], 'S_all', '-v7.3') % Save ws and fl data.
+% % Necessary to use version 7.3 to save data larger than 2GB.
+% save([save_dir, filesep, 'control.mat'], 'control', '-v7.3') % Save lap control data.

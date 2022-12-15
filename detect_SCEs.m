@@ -1,4 +1,4 @@
-%function [S_all] = detect_SCEs(S_all)
+function [S_all] = detect_SCEs(S_all)
 % Detects synchronous calcium events (SCEs). The method of detection is to
 % bin up the frame times, then monitor the number of cells with dF/F above
 % a threshold act_thres determined by the standard deviation of that cell's noise. If
@@ -124,3 +124,5 @@ title('SCE Event Detection')
 ylabel('Number of Active Neurons')
 xlabel('Frames')
 legend();
+
+end
