@@ -34,10 +34,8 @@
 %
 % ---- TO GET WAVESURFER AND SUITE2P DATA TO LINE UP: ----
 %       1. Make an array of length of ws data filled with NaNs
-%       2. Index this array with frame start times: ws_array(S.frametiming)
-%       3. Assign suite2p data to these values. There should be 1 suite2p
-%       data point for every imaging frame, so they should be the same
-%       size.
+%       2. Inde
+%       ws_data(S.frametimings)
 %
 % S.wsL - Same information as wsALL, just divided up by lap.
 %

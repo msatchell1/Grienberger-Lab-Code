@@ -1,6 +1,6 @@
 function [S_all] = detect_SCEs(S_all)
 % Detects synchronous calcium events (SCEs). The method of detection is to
-% bin up the frame times, then monitor the number of cells with dF/F above
+% monitor the number of cells with dF/F above
 % a threshold act_thres determined by the standard deviation of that cell's noise. If
 % at any time the number of active cells reaches the value SCE_thres, an SCE
 % is said to be occuring until the number of cells drops back down. To
@@ -24,7 +24,7 @@ num_nrns = size(dFF_data,2);
 
 
 noise_stds = S_all.dFF_noise_std; % Standard deviation of noise dF/F.
-act_thres = 4*noise_stds; % Setting the activity threshold.
+act_thres = noise_stds.*3; % Setting the activity thresholds.
 
 S_all.act_nrns_perframe = cell(num_frames,1); % A cell array for each frame,
 % where each cell holds the indices of neurons (as ordered in datasetSm) that
@@ -34,7 +34,8 @@ num_act_nrns_perframe = zeros(num_frames,1);
 
 for i = 1:num_frames
     
-    % Find the active neurons at frame i. act_nrns is an array of 1s
+    % Find the active neurons at frame i by comparing the activity of all neurons
+    % with their thresholds simultaneously. act_nrns is an array of 1s
     % and 0s: 1s at indices of active neurons and 0 at inactives.
     act_nrns = dFF_data(i,:) > act_thres;
     act_nrn_inds = find(act_nrns); % Indices of active neurons
@@ -82,7 +83,7 @@ S_all.num_act_nrns_perframe = num_act_nrns_perframe;
 % Now a threshold is defined for the number of neurons required to be
 % active simultaneously in order to initiate an SCE. 
 
-SCE_thres = 25; % SCE threshold.
+SCE_thres = 40; % SCE threshold.
 
 % I need to play around with different values for the minimum time gap
 % allowed between SCEs, min_SCE_gap. Just by examining the data, it seems

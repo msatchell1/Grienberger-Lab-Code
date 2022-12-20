@@ -304,6 +304,8 @@ for k=1:size(dataset,2) % Loops through each cell.
     dataset1=zeros(size(S.wsALL,1), 1); dataset1(:,:)=NaN; 
     dataset1S=dataset1;
 
+    % I believe this is showing how to lay the suite2p frame data (72000
+    % data points) over the wavesurfer frame data (3.8x10^7 data points). 
     dataset1(S.frametiming(:,1),1)=dataset(:,k); 
     dataset1S(S.frametiming(:,1),1)=datasetSm(:,k); 
     

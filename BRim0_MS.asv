@@ -237,6 +237,7 @@ ylabel('frameduration (s)'); xlabel('frame number');
 title('frame duration')
 
 %adjust frametimes to times with more running
+
 S.frametimingOriginal=S.frametiming;
 for k=1:length(S.frametiming)
     if S.wsALL(S.frametiming(k,1),2)<=0.01

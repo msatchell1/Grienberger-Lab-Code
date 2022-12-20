@@ -244,6 +244,7 @@ ylabel("Number of Active Neurons")
 figure;
 hold on;
 plot(S_all.wsALL(:,2),'DisplayName', 'velocity')
+% plot(S_all.frametimingOriginal, num_act_nrns_wsf(~isnan(num_act_nrns_wsf)), 'DisplayName', 'num active nrns')
 plot(S_all.frametimingOriginal, S_all.num_act_nrns_perframe, 'DisplayName', 'num active nrns')
 legend();
 title("Number of Active Neurons with Velocity")
@@ -256,8 +257,9 @@ ylabel("Number of Active Neurons")
 figure;
 hold on;
 plot(S_all.wsALL(:,2),'DisplayName', 'velocity')
-plot(S_all.frametimingOriginal, S_all.isSCE.*S_all.num_act_nrns_perframe./40, 'DisplayName', 'SCE events')
+% plot(S_all.frametimingOriginal, num_act_nrns_wsf(~isnan(num_act_nrns_wsf)), 'DisplayName', 'num active nrns')
+plot(S_all.frametimingOriginal, S_all.num_act_nrns_perframe, 'DisplayName', 'num active nrns')
 legend();
-title("SCE Events with Velocity")
+title("Number of Active Neurons with Velocity")
 xlabel("Wavesurfer Frames")
-ylabel("(Number of Active Neurons)/40")
+ylabel("Number of Active Neurons")
