@@ -57,6 +57,7 @@ end
 
 %% Plot the mouse velocity and fluorescence activity for entire recording.
 
+ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in seconds.
 cellnum = 46; % Cell to plot.
 
 vel_data = S_all.wsALL(:,2); % velocity of entire recording.
@@ -70,7 +71,8 @@ figure;
 hold on;
 plot(ws_time_sec, vel_data.*4, 'DisplayName', '4*velocity' )
 plot(S_all.frametimingOriginal./S_all.acq, fl_data_sm, 'DisplayName', 'dF/F smoothed' )
-plot(S_all.frametimingOriginal./S_all.acq, fl_data, 'DisplayName', 'dF/F' )
+plot(S_all.frametimingOriginal./S_all.acq, S_all.datasetSm_nodecay(:,cellnum), 'DisplayName', 'dF/F no decay' )
+% plot(S_all.frametimingOriginal./S_all.acq, fl_data, 'DisplayName', 'dF/F' )
 plot([1, ws_time_sec(end)], [act_thres, act_thres], 'DisplayName', 'activity thres')
 title(strcat("Fluorescence for Cell ", num2str(cellnum), " and Mouse Velocity"))
 ylabel("Wavesurfer Signal (V)")
