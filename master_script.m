@@ -93,6 +93,14 @@ else
 
 end
 
+%% Clear unwanted fields 
+
+% To clear the unwanted fields out of S_all to save memory.
+% fields_toclr is a cell containing strings of the named fields in S_all to
+% remove.
+fields_toclr = {'wsL','wsR'}; % Must be a cell array.
+S_all = rmfield(S_all, fields_toclr); % remove fields.
+
 
 %% Find cell noise stds
 num_nrns = size(S_all.dataset,2); % Number of neuron ROIs

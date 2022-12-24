@@ -34,8 +34,10 @@
 %
 % ---- TO GET WAVESURFER AND SUITE2P DATA TO LINE UP: ----
 %       1. Make an array of length of ws data filled with NaNs
-%       2. Inde
-%       ws_data(S.frametimings)
+%       2. Index this array with frame start times: ws_array(S.frametiming)
+%       3. Assign suite2p data to these values. There should be 1 suite2p
+%       data point for every imaging frame, so they should be the same
+%       size.
 %
 % S.wsL - Same information as wsALL, just divided up by lap.
 %
@@ -90,6 +92,13 @@ else
     load([save_dir, filesep, 'control.mat'])
 
 end
+
+
+% To clear the unwanted fields out of S_all to save memory.
+% fields_toclr is a cell containing strings of the named fields in S_all to
+% remove.
+fields_toclr = {} % Must be a cell array.
+S_all = rmfield(S_all, fields_toclr); % remove fields.
 
 
 %% Find cell noise stds

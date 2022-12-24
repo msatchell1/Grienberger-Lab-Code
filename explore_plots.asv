@@ -55,39 +55,25 @@ for i = 2:2
     title("Velocity of Individual Laps, Standing and Running ")
 end
 
-%% Plot the mouse velocity and fluorescence activity
-cellnum = 46;
-lapnum = 100;
+%% Plot the mouse velocity and fluorescence activity for entire recording.
 
-% First, because the ws data is taken at a much higher sampling frequency
-% that the fl image data, I need to reduce the size of the ws data to the
-% size of the fl data.
-vel_data = S_all.wsL{1,2}{1,lapnum}; % velocity data by lap, high
-% frequency recording.
-fl_data = S_all.dataperlap{1,cellnum}{1,lapnum}; % dF/F data, lower freq recording.
+cellnum = 46; % Cell to plot.
 
-% I need to divide vel_data into chunks and take the mean of those chunks
-% so that the result is an array of equal length to the fl data. Thus the
-% number of chunks should be floor(length(vel_data)/length(fl_data)).
-n_chunks = floor(length(vel_data)/length(fl_data));
+vel_data = S_all.wsALL(:,2); % velocity of entire recording.
+fl_data = S_all.datasetSm(:,cellnum); % dF/F data for that cell.
 
-% This line shrinks the velocity data by reshaping to a 2D matrix that is 
-% n_chunks x length(fl_data)+1 where the last column is partially filled
-% with NaNs to account for the uneven splitting into chunks. The mean of
-% this matrix is then computed along the first axis, giving a reduced size
-% mean velocity array.
-vel_shrunk = nanmean(reshape( [vel_data(:);nan(mod(-length(vel_data),n_chunks),1)],n_chunks,[]));
-
-% For this plot, I want to drop the last element of vel_shrunk so that the
-% data have equal lengths.
-vel_shrunk(end) = [];
+% Include the threshold value for identifying cell activity.
+act_thres = S_all.dFF_noise_std(1, cellnum)*3;
 
 figure;
-
 hold on;
-plot(vel_shrunk, 'DisplayName', 'velocity' )
-plot(fl_data, 'DisplayName', 'dF/F' )
-title(strcat("Velocity and Fluorescence for Cell ", num2str(cellnum), " on Lap ", num2str(lapnum)))
+plot(ws_time_sec, vel_data.*4, 'DisplayName', '4*velocity' )
+plot(S_all.frametimingOriginal./S_all.acq, fl_data, 'DisplayName', 'dF/F smoothed' )
+plot(S_all.frametimingOriginal./S_all.acq, fl_data, 'DisplayName', 'dF/F ' )
+plot([1, ws_time_sec(end)], [act_thres, act_thres], 'DisplayName', 'activity thres')
+title(strcat("Fluorescence for Cell ", num2str(cellnum), " and Mouse Velocity"))
+ylabel("Wavesurfer Signal (V)")
+xlabel('Time (s)')
 legend()
 
 %% Original Fluorescence plots
@@ -110,64 +96,74 @@ end
 % can just look at the whole fluorescence trace over the entire training
 % period and compare that with the velocity.
 
-vel_exp = S_all.wsALL(:,2); % Velocity across entire experiment.
-fl_exp = S_all.datasetSm; % Fluorescence across enitre experiment for all nrns.
+% --------------------
+% NOTE: What I did here below was wrong. I cannot simply compress the
+% wavesurfer data to be the size of the site2p imaging data to align them
+% to the same time scale. This is because the suite2p data was not taken
+% continuously, nor did it start or end recording at the same as the ws
+% data. Instead, I need to use S_all.frametimingOriginal to align the
+% suite2p data to the ws data.
+% -----------------------
+%
+% vel_exp = S_all.wsALL(:,2); % Velocity across entire experiment.
+% 
+% % I need to divide the velocity into chunks and take the mean of those chunks
+% % so that the result is an array of equal length to the fl data.
+% n_chunks = floor(length(vel_exp)/length(fl_exp));
+% 
+% % This line shrinks the velocity data by reshaping to a 2D matrix that is 
+% % n_chunks x length(fl_data)+1 where the last column is partially filled
+% % with NaNs to account for the uneven splitting into chunks. The mean of
+% % this matrix is then computed along the first axis, giving a reduced size
+% % mean velocity array.
+% vel_exp_shk = nanmean(reshape( [vel_exp(:);nan(mod(-length(vel_exp),n_chunks),1)], n_chunks,[]));
+% % vel_exp_shk(length(vel_exp_shk)-length(fl_exp):end) = []; % Delete last 
+% % elements so that array has same size as fl_exp.
+% 
+% neg_inds = vel_exp_shk < 0; % Indices in velocity data where velocity is less than 0.
+% vel_exp_shk(neg_inds) = 0; % Changes negative values to zero. Note I can no longer
+% % integrate this data to accurately get position. 
+% 
+% vel_exp_mf = medfilt1(vel_exp_shk); % 1D median filter to smooth data.
+% 
+% % figure;
+% % hold on;
+% % plot(vel_exp_shk, 'DisplayName', 'shrunk data')
+% % plot(vel_exp_mf, 'DisplayName', 'median filtered')
+% % ylabel('Velocity (V)')
+% % legend()
 
-% figure;
-% plot(S_all.wsALL(:,2), 'DisplayName','original')
-% hold on;
-% plot(vel_mf, 'DisplayName','median filter')
-% legend()
 
-% I need to divide the velocity into chunks and take the mean of those chunks
-% so that the result is an array of equal length to the fl data.
-n_chunks = floor(length(vel_exp)/length(fl_exp));
-
-% This line shrinks the velocity data by reshaping to a 2D matrix that is 
-% n_chunks x length(fl_data)+1 where the last column is partially filled
-% with NaNs to account for the uneven splitting into chunks. The mean of
-% this matrix is then computed along the first axis, giving a reduced size
-% mean velocity array.
-vel_exp_shk = nanmean(reshape( [vel_exp(:);nan(mod(-length(vel_exp),n_chunks),1)], n_chunks,[]));
-% vel_exp_shk(length(vel_exp_shk)-length(fl_exp):end) = []; % Delete last 
-% elements so that array has same size as fl_exp.
-
-neg_inds = vel_exp_shk < 0; % Indices in velocity data where velocity is less than 0.
-vel_exp_shk(neg_inds) = 0; % Changes negative values to zero. Note I can no longer
-% integrate this data to accurately get position. 
-
-vel_exp_mf = medfilt1(vel_exp_shk); % 1D median filter to smooth data.
-
-% figure;
-% hold on;
-% plot(vel_exp_shk, 'DisplayName', 'shrunk data')
-% plot(vel_exp_mf, 'DisplayName', 'median filtered')
-% ylabel('Velocity (V)')
-% legend()
+% Correct way to combine ws and suite2p data:
 
 % Find average of fluorescence across all cells.
+fl_exp = S_all.datasetSm; % Fluorescence across enitre experiment for all nrns.
 fl_exp_avg = mean(fl_exp,2);
 fl_exp_std = std(fl_exp,0,2);
 
+ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in seconds.
+
 figure;
 hold on;
-plot(vel_exp_mf, 'DisplayName', 'velocity (V)');
-eb_ax = shadedErrorBar([],fl_exp_avg, fl_exp_std);
-xlabel('frames')
+plot(ws_time_sec, S_all.wsALL(:,2), 'DisplayName', 'velocity');
+eb_ax = shadedErrorBar(S_all.frametimingOriginal./S_all.acq, fl_exp_avg.*3, fl_exp_std);
+eb_ax.mainLine.DisplayName = 'avg dF/F';
+xlabel('Time (s)')
 title('Velocity and Avg Fluorescence for Entire Experiment')
+ylabel('Wavesurfer Signal (V)')
 legend();
 
 %% Fl of individual cells vs velocity whole experiment
 
-figure;
-hold on;
-plot(vel_exp_mf, 'DisplayName', 'velocity (V)');
-for i = 40:40
-    plot(S_all.datasetSm(:,i), 'DisplayName', strcat('Cell', num2str(i)));
-end
-title('Fl of Cells and Mouse Velocity')
-xlabel('Frames')
-legend();
+% figure;
+% hold on;
+% plot(vel_exp_mf, 'DisplayName', 'velocity (V)');
+% for i = 40:40
+%     plot(S_all.datasetSm(:,i), 'DisplayName', strcat('Cell', num2str(i)));
+% end
+% title('Fl of Cells and Mouse Velocity - INCORRECT FRAME CONVERSION')
+% xlabel('Frames')
+% legend();
 
 % % Compare dF/F with raw fl trace
 % rawfl_nrns = S_all.datasetorig(:,S_all.listofneurons);
@@ -176,13 +172,13 @@ legend();
 
 %% SCE Events and velocity
 
-figure;
-hold on;
-plot(vel_exp_mf, 'DisplayName', 'velocity (V)');
-plot(S_all.isSCE.*S_all.num_act_nrns_perframe./40, 'DisplayName', 'isSCE');
-title('SCEs and Velocity');
-xlabel('Frame')
-legend();
+% figure;
+% hold on;
+% plot(vel_exp_mf, 'DisplayName', 'velocity (V)');
+% plot(S_all.isSCE.*S_all.num_act_nrns_perframe./40, 'DisplayName', 'isSCE');
+% title('SCEs and Velocity (INCORRECT FRAME CONVERSION)');
+% xlabel('Frame')
+% legend();
 
 
 %% Cell stds
@@ -211,10 +207,10 @@ text(0.25*length(S_all.dFF_noise_std), 0.75*max(S_all.dFF_noise_std), txt)
 
 figure;
 hold on;
-plot(S_all.wsALL(:,5),'DisplayName', 'frameclock')
-plot(S_all.wsALL(:,2), 'DisplayName', 'velocity')
+plot(ws_time_sec, S_all.wsALL(:,5),'DisplayName', 'frameclock')
+plot(ws_time_sec, S_all.wsALL(:,2), 'DisplayName', 'velocity')
 title("Original ws Data for Frameclock and Velocity")
-xlabel("Wavesurfer Frames")
+xlabel("Time (s)")
 ylabel('Wavesurfer Readout (V)')
 legend();
 
@@ -230,36 +226,32 @@ num_act_nrns_wsf(S_all.frametimingOriginal) = S_all.num_act_nrns_perframe;
 
 figure;
 hold on;
-plot(S_all.wsALL(:,5),'DisplayName', 'frameclock')
+plot(ws_time_sec, S_all.wsALL(:,5),'DisplayName', 'frameclock')
 % plot(S_all.frametimingOriginal, num_act_nrns_wsf(~isnan(num_act_nrns_wsf)), 'DisplayName', 'num active nrns')
-plot(S_all.frametimingOriginal, S_all.num_act_nrns_perframe, 'DisplayName', 'num active nrns')
+plot(S_all.frametimingOriginal./S_all.acq, S_all.num_act_nrns_perframe, 'DisplayName', 'num active nrns')
 legend();
 title("Number of Active Neurons Fit Over Frameclock")
-xlabel("Wavesurfer Frames")
+xlabel("Time (s)")
 ylabel("Number of Active Neurons")
 
 
 % And plotting the same thing but with velocity:
-
 figure;
 hold on;
-plot(S_all.wsALL(:,2),'DisplayName', 'velocity')
-% plot(S_all.frametimingOriginal, num_act_nrns_wsf(~isnan(num_act_nrns_wsf)), 'DisplayName', 'num active nrns')
-plot(S_all.frametimingOriginal, S_all.num_act_nrns_perframe, 'DisplayName', 'num active nrns')
+plot(ws_time_sec, S_all.wsALL(:,2),'DisplayName', 'velocity')
+plot(S_all.frametimingOriginal./S_all.acq, S_all.num_act_nrns_perframe./40, 'DisplayName', 'num active nrns')
 legend();
 title("Number of Active Neurons with Velocity")
-xlabel("Wavesurfer Frames")
-ylabel("Number of Active Neurons")
+xlabel("Time (s)")
+ylabel("(Number of Active Neurons)/40")
 
 
 % And finally plotting the SCE events with velocity:
-
 figure;
 hold on;
-plot(S_all.wsALL(:,2),'DisplayName', 'velocity')
-% plot(S_all.frametimingOriginal, num_act_nrns_wsf(~isnan(num_act_nrns_wsf)), 'DisplayName', 'num active nrns')
-plot(S_all.frametimingOriginal, S_all.num_act_nrns_perframe, 'DisplayName', 'num active nrns')
+plot(ws_time_sec, S_all.wsALL(:,2),'DisplayName', 'velocity')
+plot(S_all.frametimingOriginal./S_all.acq, S_all.isSCE.*S_all.num_act_nrns_perframe./40, 'DisplayName', 'SCE events')
 legend();
-title("Number of Active Neurons with Velocity")
-xlabel("Wavesurfer Frames")
-ylabel("Number of Active Neurons")
+title("SCE Events with Velocity")
+xlabel("Time (s)")
+ylabel("(Number of Active Neurons)/40")

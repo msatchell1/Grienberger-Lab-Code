@@ -53,7 +53,7 @@ hold on;
 plot(num_act_nrns_perframe, 'DisplayName', 'PMT-artifact included')
 title('Ensemble Activity Before and After Removing PMT Artifact')
 ylabel('Number of Active Neurons')
-xlabel('Frames')
+xlabel('Imaging Frames')
 legend();
 
 % The PMT-off periods drop the number of active cells to 0 about every 400
@@ -83,12 +83,8 @@ S_all.num_act_nrns_perframe = num_act_nrns_perframe;
 % Now a threshold is defined for the number of neurons required to be
 % active simultaneously in order to initiate an SCE. 
 
-SCE_thres = 40; % SCE threshold.
-
-% I need to play around with different values for the minimum time gap
-% allowed between SCEs, min_SCE_gap. Just by examining the data, it seems
-% like somewhere between 25 and 50 frames will be good.
-min_SCE_gap = 50;
+SCE_thres = 40; % SCE detection threshold (number of active neurons).
+min_SCE_gap = 50; % The minimum gap allowed between SCEs (imaging frames).
 
 isSCE = zeros(num_frames,1); % Array to hold whether or not an SCE is occuring 
 % at each time frame.
@@ -123,7 +119,7 @@ plot(zeros(size(num_act_nrns_perframe))+SCE_thres, 'DisplayName', 'SCE threshold
 plot(isSCE.*35, 'DisplayName', 'isSCE')
 title('SCE Event Detection')
 ylabel('Number of Active Neurons')
-xlabel('Frames')
+xlabel('Imaging Frames')
 legend();
 
 end
