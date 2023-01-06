@@ -9,58 +9,60 @@ num_laps = size(S_all.Running,2); % Number of laps the mouse has run
 num_bins = size(S_all.Running,1); % Number of bins each lap is tiled into.
 
 %%
-figure; 
-imagesc(transpose(S_all.Running)*80); 
-ax=gca;
-set(ax, 'XTick', [0.5 13 25.5 38 50.5]); 
-set(ax, 'XTickLabel',({'0', '45', '90','135','180'}));
-ylabel('Lap #'); 
-xlabel("Position (cm)")
-c = colorbar;
-c.Label.String = "Velocity (cm/s)";
-caxis([0 inf])
-title ('Velocity across laps')
-
-figure();
-plot(S_all.MeanRunning*80, 'b', 'Linewidth',2); 
-ax=gca;
-set(ax, 'XTick', [1 6.25 12.5 18.75 25 31.25 37.5 43.75 50]); 
-set(ax, 'XTickLabel',({'0', '', '45', '', '90','','135','','180'}));
-xlabel('Position (cm)'); ylabel('Velocity (cm/s)'); 
-title("Mean Velocity Across All Laps")
-ylim([0 inf]);
+% figure; 
+% imagesc(transpose(S_all.Running)*80); 
+% ax=gca;
+% set(ax, 'XTick', [0.5 13 25.5 38 50.5]); 
+% set(ax, 'XTickLabel',({'0', '45', '90','135','180'}));
+% ylabel('Lap #'); 
+% xlabel("Position (cm)")
+% c = colorbar;
+% c.Label.String = "Velocity (cm/s)";
+% caxis([0 inf])
+% title ('Velocity across laps')
+% 
+% figure();
+% plot(S_all.MeanRunning*80, 'b', 'Linewidth',2); 
+% ax=gca;
+% set(ax, 'XTick', [1 6.25 12.5 18.75 25 31.25 37.5 43.75 50]); 
+% set(ax, 'XTickLabel',({'0', '', '45', '', '90','','135','','180'}));
+% xlabel('Position (cm)'); ylabel('Velocity (cm/s)'); 
+% title("Mean Velocity Across All Laps")
+% ylim([0 inf]);
 
 %% Plot individual laps with only running
-figure();
-for i = 2:2
-    hold on;
-    plot(S_all.Running(:,i)*80)
-    ax=gca;
-    set(ax, 'XTick', [1 6.25 12.5 18.75 25 31.25 37.5 43.75 50]); 
-    set(ax, 'XTickLabel',({'0', '', '45', '', '90','','135','','180'}));
-    xlabel('Position (cm)'); ylabel('Velocity (cm/s)'); 
-    title("Velocity of Individual Laps, Running Only ");
-    ylim([0 inf]);
-end
-
-% Plot individual laps with running and standing
-figure;
-for i = 2:2
-    hold on;
-    plot(S_all.wsL{1,2}{1,i}) % wsL{1,2} holds velocity data for each lap.
+% figure();
+% for i = 2:2
+%     hold on;
+%     plot(S_all.Running(:,i)*80)
 %     ax=gca;
-%     set(ax, 'XTick', [0, max()]);
+%     set(ax, 'XTick', [1 6.25 12.5 18.75 25 31.25 37.5 43.75 50]); 
 %     set(ax, 'XTickLabel',({'0', '', '45', '', '90','','135','','180'}));
-    xlabel('Frames'); ylabel('Velocity (cm/s)'); 
-    title("Velocity of Individual Laps, Standing and Running ")
-end
+%     xlabel('Position (cm)'); ylabel('Velocity (cm/s)'); 
+%     title("Velocity of Individual Laps, Running Only ");
+%     ylim([0 inf]);
+% end
+% 
+% % Plot individual laps with running and standing
+% figure;
+% for i = 2:2
+%     hold on;
+%     plot(S_all.wsL{1,2}{1,i}) % wsL{1,2} holds velocity data for each lap.
+% %     ax=gca;
+% %     set(ax, 'XTick', [0, max()]);
+% %     set(ax, 'XTickLabel',({'0', '', '45', '', '90','','135','','180'}));
+%     xlabel('Frames'); ylabel('Velocity (cm/s)'); 
+%     title("Velocity of Individual Laps, Standing and Running ")
+% end
 
-%% Plot the mouse velocity and fluorescence activity for entire recording.
+%% Plot the mouse velocity and single cell fluorescence activity for entire recording.
 
+ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in seconds.
 cellnum = 46; % Cell to plot.
 
 vel_data = S_all.wsALL(:,2); % velocity of entire recording.
-fl_data = S_all.datasetSm(:,cellnum); % dF/F data for that cell.
+fl_data = S_all.dataset(:,cellnum); % dF/F data for that cell.
+fl_data_sm = S_all.datasetSm(:,cellnum); % smoothed dF/F data for that cell.
 
 % Include the threshold value for identifying cell activity.
 act_thres = S_all.dFF_noise_std(1, cellnum)*3;
@@ -68,27 +70,27 @@ act_thres = S_all.dFF_noise_std(1, cellnum)*3;
 figure;
 hold on;
 plot(ws_time_sec, vel_data.*4, 'DisplayName', '4*velocity' )
-plot(S_all.frametimingOriginal./S_all.acq, fl_data, 'DisplayName', 'dF/F smoothed' )
-plot(S_all.frametimingOriginal./S_all.acq, fl_data, 'DisplayName', 'dF/F ' )
+plot(S_all.frametimingOriginal./S_all.acq, fl_data_sm, 'DisplayName', 'dF/F smoothed' )
+% plot(S_all.frametimingOriginal./S_all.acq, fl_data, 'DisplayName', 'dF/F' )
 plot([1, ws_time_sec(end)], [act_thres, act_thres], 'DisplayName', 'activity thres')
 title(strcat("Fluorescence for Cell ", num2str(cellnum), " and Mouse Velocity"))
-ylabel("Wavesurfer Signal (V)")
+ylabel("dF/F")
 xlabel('Time (s)')
 legend()
 
 %% Original Fluorescence plots
 
-for i = 3:3
-    figure();
-    hold on
-    plot(S_all.datasetorig(:,i))
-    title(strcat("Unaltered Data for Cell ", num2str(i)))
-    ylabel("Fluorescence (V)")
-    xlabel("Frames")
-%     plot(datasetNeu(:,i))
-%     plot(datasetSm(:,i)-datasetNeu(:,i))
-%     legend(["Raw F","Neuropil F","F-Fneu"])
-end
+% for i = 3:3
+%     figure();
+%     hold on
+%     plot(S_all.datasetorig(:,i))
+%     title(strcat("Unaltered Data for Cell ", num2str(i)))
+%     ylabel("Fluorescence (V)")
+%     xlabel("Frames")
+% %     plot(datasetNeu(:,i))
+% %     plot(datasetSm(:,i)-datasetNeu(:,i))
+% %     legend(["Raw F","Neuropil F","F-Fneu"])
+% end
 
 
 %% Plot velocity and average fluorescence trace with shaded error bars.
@@ -145,13 +147,20 @@ ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in secon
 
 figure;
 hold on;
-plot(ws_time_sec, S_all.wsALL(:,2), 'DisplayName', 'velocity');
-eb_ax = shadedErrorBar(S_all.frametimingOriginal./S_all.acq, fl_exp_avg.*3, fl_exp_std);
+colororder({'[0 0.4470 0.7410]','k'})
+
+yyaxis left
+plot(ws_time_sec, S_all.wsALL(:,2).*80, 'DisplayName', 'velocity');
+ylabel("Velocity (cm/s)")
+
+yyaxis right
+eb_ax = shadedErrorBar(S_all.frametimingOriginal./S_all.acq, fl_exp_avg, fl_exp_std);
 eb_ax.mainLine.DisplayName = 'avg dF/F';
+ylabel("Average dF/F")
+
 xlabel('Time (s)')
 title('Velocity and Avg Fluorescence for Entire Experiment')
-ylabel('Wavesurfer Signal (V)')
-legend();
+% legend();
 
 %% Fl of individual cells vs velocity whole experiment
 
@@ -183,10 +192,10 @@ legend();
 
 %% Cell stds
 
-std_thres = 0.21; % Threshold for seperating the stds of cells.
+r2_thres = 0.23; % Threshold for seperating the stds of cells.
 
-n_above = length(find(S_all.dFF_noise_std >= std_thres));
-n_below = length(find(S_all.dFF_noise_std < std_thres));
+n_above = length(find(S_all.dFF_noise_std >= r2_thres));
+n_below = length(find(S_all.dFF_noise_std < r2_thres));
 p_above = 100*n_above/size(S_all.dFF_noise_std,2);
 p_below = 100*n_below/size(S_all.dFF_noise_std,2);
 
@@ -194,8 +203,8 @@ p_below = 100*n_below/size(S_all.dFF_noise_std,2);
 figure;
 hold on;
 plot(S_all.dFF_noise_std, 'o', 'DisplayName', 'Cell Stds')
-plot(zeros(size(S_all.dFF_noise_std))+std_thres, 'DisplayName', 'Std Threshold')
-title('Cell Standard Deviations');
+plot(zeros(size(S_all.dFF_noise_std))+r2_thres, 'DisplayName', 'Std Threshold')
+title('Cell Standard Deviations (NOT A GOOD INDICATOR OF NRN TYPE)');
 ylabel('Std (dF/F)')
 xlabel('Cell Number in Suite2p Order');
 legend()
@@ -203,16 +212,39 @@ txt = ['above thr = ', num2str(round(p_above,0)), '%, below thr = ', num2str(rou
 text(0.25*length(S_all.dFF_noise_std), 0.75*max(S_all.dFF_noise_std), txt)
 
 
-%% PLotting frameclock and velocity together
+%% Cell r-squared values
+
+r2_thres = 0.94; % Threshold for seperating the stds of cells.
+
+n_above = length(find(S_all.dFF_noise_r2 >= r2_thres));
+n_below = length(find(S_all.dFF_noise_r2 < r2_thres));
+p_above = 100*n_above/size(S_all.dFF_noise_r2,2);
+p_below = 100*n_below/size(S_all.dFF_noise_r2,2);
+
 
 figure;
 hold on;
-plot(ws_time_sec, S_all.wsALL(:,5),'DisplayName', 'frameclock')
-plot(ws_time_sec, S_all.wsALL(:,2), 'DisplayName', 'velocity')
-title("Original ws Data for Frameclock and Velocity")
-xlabel("Time (s)")
-ylabel('Wavesurfer Readout (V)')
-legend();
+plot(S_all.dFF_noise_r2, 'o', 'DisplayName', 'Cell R-sqrd')
+plot(zeros(size(S_all.dFF_noise_r2))+r2_thres, 'DisplayName', 'R-sqrd Threshold')
+title('Goodness of Gaussian Fits to dF/F Histograms');
+ylabel('R-sqrd')
+xlabel('Cell Number in Suite2p Order');
+legend()
+txt = ['above thr = ', num2str(round(p_above,0)), '%, below thr = ', num2str(round(p_below,0)), '%'];
+text(0.25*length(S_all.dFF_noise_r2), 0.9*r2_thres, txt)
+
+
+
+%% PLotting frameclock and velocity together
+
+% figure;
+% hold on;
+% plot(ws_time_sec, S_all.wsALL(:,5),'DisplayName', 'frameclock')
+% plot(ws_time_sec, S_all.wsALL(:,2), 'DisplayName', 'velocity')
+% title("Original ws Data for Frameclock and Velocity")
+% xlabel("Time (s)")
+% ylabel('Wavesurfer Readout (V)')
+% legend();
 
 %% Plotting num active neurons into correct frameclock periods
 
@@ -224,26 +256,32 @@ num_act_nrns_wsf(:) = nan;
 % this case, the number of active neurons.
 num_act_nrns_wsf(S_all.frametimingOriginal) = S_all.num_act_nrns_perframe;
 
-figure;
-hold on;
-plot(ws_time_sec, S_all.wsALL(:,5),'DisplayName', 'frameclock')
-% plot(S_all.frametimingOriginal, num_act_nrns_wsf(~isnan(num_act_nrns_wsf)), 'DisplayName', 'num active nrns')
-plot(S_all.frametimingOriginal./S_all.acq, S_all.num_act_nrns_perframe, 'DisplayName', 'num active nrns')
-legend();
-title("Number of Active Neurons Fit Over Frameclock")
-xlabel("Time (s)")
-ylabel("Number of Active Neurons")
+% figure;
+% hold on;
+% plot(ws_time_sec, S_all.wsALL(:,5),'DisplayName', 'frameclock')
+% % plot(S_all.frametimingOriginal, num_act_nrns_wsf(~isnan(num_act_nrns_wsf)), 'DisplayName', 'num active nrns')
+% plot(S_all.frametimingOriginal./S_all.acq, S_all.num_act_nrns_perframe, 'DisplayName', 'num active nrns')
+% legend();
+% title("Number of Active Neurons Fit Over Frameclock")
+% xlabel("Time (s)")
+% ylabel("Number of Active Neurons")
 
 
 % And plotting the same thing but with velocity:
 figure;
 hold on;
-plot(ws_time_sec, S_all.wsALL(:,2),'DisplayName', 'velocity')
-plot(S_all.frametimingOriginal./S_all.acq, S_all.num_act_nrns_perframe./40, 'DisplayName', 'num active nrns')
-legend();
+yyaxis left
+plot(ws_time_sec, S_all.wsALL(:,2).*80,'DisplayName', 'velocity')
+ylabel('Velocity (cm/s)')
+
+yyaxis right
+plot(S_all.frametimingOriginal./S_all.acq, S_all.num_act_nrns_perframe, 'DisplayName', 'num active nrns')
+ylabel("Number of Active Neurons")
+
+% legend();
 title("Number of Active Neurons with Velocity")
 xlabel("Time (s)")
-ylabel("(Number of Active Neurons)/40")
+
 
 
 % And finally plotting the SCE events with velocity:
@@ -255,3 +293,43 @@ legend();
 title("SCE Events with Velocity")
 xlabel("Time (s)")
 ylabel("(Number of Active Neurons)/40")
+
+%% Compare normal smoothed dF/F to no decay dF/F.
+
+cellnum = 300; % Cell to plot.
+
+ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in seconds.
+fl_data_sm = S_all.datasetSm(:,cellnum); % smoothed dF/F data for that cell.
+
+% Include the threshold value for identifying cell activity.
+act_thres = S_all.dFF_noise_std(1, cellnum)*3;
+
+figure;
+hold on;
+plot(S_all.frametimingOriginal./S_all.acq, fl_data_sm, 'DisplayName', 'dF/F' )
+plot(S_all.frametimingOriginal./S_all.acq, S_all.datasetSm_nodecay(:,cellnum), 'DisplayName', 'dF/F no decay' )
+plot([1, ws_time_sec(end)], [act_thres, act_thres], 'DisplayName', 'activity thres')
+title(strcat("No-Decay Algorithm Analysis with Fluorescence from Cell ", num2str(cellnum)))
+ylabel("dF/F")
+xlabel('Time (s)')
+legend()
+
+
+%% Plot velocity and average dF/F no decay.
+
+% Find average of fluorescence across all cells.
+fl_exp = S_all.datasetSm_nodecay; % Fluorescence across enitre experiment for all nrns.
+fl_exp_avg = mean(fl_exp,2);
+fl_exp_std = std(fl_exp,0,2);
+
+ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in seconds.
+
+figure;
+hold on;
+plot(ws_time_sec, S_all.wsALL(:,2), 'DisplayName', 'velocity');
+eb_ax = shadedErrorBar(S_all.frametimingOriginal./S_all.acq, fl_exp_avg.*3, fl_exp_std);
+eb_ax.mainLine.DisplayName = 'avg dF/F';
+xlabel('Time (s)')
+title('Velocity and Avg dF/F No Ca Decay Data')
+ylabel('Wavesurfer Signal (V)')
+legend();

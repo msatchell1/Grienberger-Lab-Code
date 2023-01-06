@@ -3,7 +3,11 @@
 % The variables in S (now S_all) are described below:
 %
 % S.Running - Animal speed (V) (multiply by 80 to get cm/s).
-%
+% size(S_all.dataset,2); = Number of neuron ROIs
+% size(S_all.datasetorig,2); = Number of total ROIs (neurons + neuropil)
+% num_ROIs - num_nrns; = Number of neuropil.
+% size(S_all.Running,2); = Number of laps the mouse has run
+% size(S_all.Running,1); = Number of bins each lap is tiled into.
 % 
 
 %
@@ -93,7 +97,7 @@ else
 
 end
 
-%% Clear unwanted fields 
+%% Clear unused fields 
 
 % To clear the unwanted fields out of S_all to save memory.
 % fields_toclr is a cell containing strings of the named fields in S_all to
@@ -103,18 +107,23 @@ S_all = rmfield(S_all, fields_toclr); % remove fields.
 
 
 %% Find cell noise stds
-num_nrns = size(S_all.dataset,2); % Number of neuron ROIs
-num_ROIs = size(S_all.datasetorig,2); % Number of total ROIs (neurons + neuropil)
-num_neu = num_ROIs - num_nrns;
-num_laps = size(S_all.Running,2); % Number of laps the mouse has run
-num_bins = size(S_all.Running,1); % Number of bins each lap is tiled into.
 
-S_all = noise_dist(S_all, 0); % Calculate standard deviations for the noise 
+S_all = noise_dist(S_all, 1); % Calculate standard deviations for the noise 
 % of the dF/F traces of each neuron. 
+
+
+%% Remove Ca decay from dF/F trace
+
+S_all = zero_Ca_decay(S_all);
+
 
 %% Detect SCEs
 
-S_all = detect_SCEs(S_all); % Detect synchronous calcium events and store the data in S_all.
+% S_all = detect_SCEs(S_all); % Detect synchronous calcium events and store the data in S_all.
+
+S_all = detect_SCEs_nodecay(S_all); % Detect synchronous Ca events using dF/F
+% data without the Ca spike decay portion of the singal.
+
 
 
 

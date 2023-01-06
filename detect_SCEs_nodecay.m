@@ -1,4 +1,7 @@
-function [S_all] = detect_SCEs(S_all)
+function [S_all] = detect_SCEs_nodecay(S_all)
+% Performs the sametask as detect_SCEs.m, but uses S_all.datasetSm_nodecay
+% for labelling neuronal Ca activity.
+%
 % Detects synchronous calcium events (SCEs). The method of detection is to
 % monitor the number of cells with dF/F above
 % a threshold act_thres determined by the standard deviation of that cell's noise. If
@@ -18,7 +21,7 @@ function [S_all] = detect_SCEs(S_all)
 % ----- Michael Satchell 12/14/22 -----
 
 % Use the smoothed dF/F data:
-dFF_data = S_all.datasetSm;
+dFF_data = S_all.datasetSm_nodecay;
 num_frames = size(dFF_data,1);
 num_nrns = size(dFF_data,2);
 
@@ -83,7 +86,7 @@ S_all.num_act_nrns_perframe = num_act_nrns_perframe;
 % Now a threshold is defined for the number of neurons required to be
 % active simultaneously in order to initiate an SCE. 
 
-SCE_thres = 40; % SCE detection threshold (number of active neurons).
+SCE_thres = 30; % SCE detection threshold (number of active neurons).
 min_SCE_gap = 50; % The minimum gap allowed between SCEs (imaging frames).
 
 isSCE = zeros(num_frames,1); % Array to hold whether or not an SCE is occuring 

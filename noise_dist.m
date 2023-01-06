@@ -17,6 +17,8 @@ num_nrns = size(dFF_data,2);
 % each neuron.
 S_all.dFF_noise_std = zeros(1,num_nrns);
 
+S_all.dFF_noise_r2 = zeros(1,num_nrns); % Hold r-squared values from gauss fits. 
+
 fig1 = figure(1);
 
 for i = 1:num_nrns
@@ -49,6 +51,8 @@ for i = 1:num_nrns
 
     % Adds standard deviation calculated from fit to array.
     S_all.dFF_noise_std(1,i) = gausscurve.d;
+    % Adds r-squared from fit to array.
+    S_all.dFF_noise_r2(1,i) = round(gofgauss.rsquare,3);
     
     % Plots each fit individually with R-squared value.
     yfitdata = gausscurve(min(xvals_hist):H.BinWidth:max(xvals_hist));
@@ -61,7 +65,7 @@ for i = 1:num_nrns
     txt = strcat('R^2 = ', num2str(round(gofgauss.rsquare,3)));
     text(max(xvals_hist)/2,max(yvals_hist),txt);
     
-    if view_fits
+    if view_fits & i > 0
         pause; % Use pause to view each plot.
     end
 
