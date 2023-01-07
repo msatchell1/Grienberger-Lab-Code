@@ -108,7 +108,7 @@ S_all = rmfield(S_all, fields_toclr); % remove fields.
 
 %% Find cell noise stds
 
-S_all = noise_dist(S_all, 1); % Calculate standard deviations for the noise 
+S_all = noise_dist(S_all, 0); % Calculate standard deviations for the noise 
 % of the dF/F traces of each neuron. 
 
 
@@ -119,7 +119,7 @@ S_all = zero_Ca_decay(S_all);
 
 %% Detect SCEs
 
-% S_all = detect_SCEs(S_all); % Detect synchronous calcium events and store the data in S_all.
+S_all = detect_SCEs(S_all); % Detect synchronous calcium events and store the data in S_all.
 
 S_all = detect_SCEs_nodecay(S_all); % Detect synchronous Ca events using dF/F
 % data without the Ca spike decay portion of the singal.

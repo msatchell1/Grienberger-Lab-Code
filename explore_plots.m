@@ -246,7 +246,7 @@ text(0.25*length(S_all.dFF_noise_r2), 0.9*r2_thres, txt)
 % ylabel('Wavesurfer Readout (V)')
 % legend();
 
-%% Plotting num active neurons into correct frameclock periods
+%% Plotting num active neurons with velocity
 
 % Create array of nans the size of ws frame data.
 num_act_nrns_wsf = zeros(size(S_all.wsALL(:,1)));
@@ -283,17 +283,35 @@ title("Number of Active Neurons with Velocity")
 xlabel("Time (s)")
 
 
+% 
+% % And finally plotting the SCE events with velocity:
+% figure;
+% hold on;
+% plot(ws_time_sec, S_all.wsALL(:,2),'DisplayName', 'velocity')
+% plot(S_all.frametimingOriginal./S_all.acq, S_all.isSCE.*S_all.num_act_nrns_perframe./40, 'DisplayName', 'SCE events')
+% legend();
+% title("SCE Events with Velocity")
+% xlabel("Time (s)")
+% ylabel("(Number of Active Neurons)/40")
 
-% And finally plotting the SCE events with velocity:
+%% Number of active neurons and velocity no Ca decay
+
+
+ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in seconds.
+
 figure;
 hold on;
-plot(ws_time_sec, S_all.wsALL(:,2),'DisplayName', 'velocity')
-plot(S_all.frametimingOriginal./S_all.acq, S_all.isSCE.*S_all.num_act_nrns_perframe./40, 'DisplayName', 'SCE events')
-legend();
-title("SCE Events with Velocity")
-xlabel("Time (s)")
-ylabel("(Number of Active Neurons)/40")
+yyaxis left
+plot(ws_time_sec, S_all.wsALL(:,2).*80,'DisplayName', 'velocity')
+ylabel('Velocity (cm/s)')
 
+yyaxis right
+plot(S_all.frametimingOriginal./S_all.acq, S_all.num_act_nrns_perframe_nd, 'DisplayName', 'num active nrns')
+ylabel("Number of Active Neurons")
+
+% legend();
+title("Number of Active Neurons and Velocity, No Ca Decay")
+xlabel("Time (s)")
 %% Compare normal smoothed dF/F to no decay dF/F.
 
 cellnum = 300; % Cell to plot.
@@ -326,10 +344,17 @@ ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in secon
 
 figure;
 hold on;
-plot(ws_time_sec, S_all.wsALL(:,2), 'DisplayName', 'velocity');
-eb_ax = shadedErrorBar(S_all.frametimingOriginal./S_all.acq, fl_exp_avg.*3, fl_exp_std);
+colororder({'[0 0.4470 0.7410]','k'})
+
+yyaxis left
+plot(ws_time_sec, S_all.wsALL(:,2).*80, 'DisplayName', 'velocity');
+ylabel("Velocity (cm/s)")
+
+yyaxis right
+eb_ax = shadedErrorBar(S_all.frametimingOriginal./S_all.acq, fl_exp_avg, fl_exp_std);
 eb_ax.mainLine.DisplayName = 'avg dF/F';
+ylabel("Average dF/F")
+
 xlabel('Time (s)')
-title('Velocity and Avg dF/F No Ca Decay Data')
-ylabel('Wavesurfer Signal (V)')
-legend();
+title('Velocity and Avg dF/F No Ca Decay')
+% legend();

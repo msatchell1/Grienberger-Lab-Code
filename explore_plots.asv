@@ -159,7 +159,7 @@ eb_ax.mainLine.DisplayName = 'avg dF/F';
 ylabel("Average dF/F")
 
 xlabel('Time (s)')
-title('Velocity and Avg Fluorescence for Entire Experiment')
+title('Velocity and Average dF/F')
 % legend();
 
 %% Fl of individual cells vs velocity whole experiment
@@ -326,8 +326,10 @@ ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in secon
 
 figure;
 hold on;
+
+yyaxis left
 plot(ws_time_sec, S_all.wsALL(:,2), 'DisplayName', 'velocity');
-eb_ax = shadedErrorBar(S_all.frametimingOriginal./S_all.acq, fl_exp_avg.*3, fl_exp_std);
+eb_ax = shadedErrorBar(S_all.frametimingOriginal./S_all.acq, fl_exp_avg, fl_exp_std);
 eb_ax.mainLine.DisplayName = 'avg dF/F';
 xlabel('Time (s)')
 title('Velocity and Avg dF/F No Ca Decay Data')

@@ -20,7 +20,7 @@ function [S_all] = detect_SCEs_nodecay(S_all)
 %
 % ----- Michael Satchell 12/14/22 -----
 
-% Use the smoothed dF/F data with no Ca decay period:
+% Use the smoothed dF/F data:
 dFF_data = S_all.datasetSm_nodecay;
 num_frames = size(dFF_data,1);
 num_nrns = size(dFF_data,2);
@@ -33,7 +33,7 @@ S_all.act_nrns_perframe_nd = cell(num_frames,1); % A cell array for each frame,
 % where each cell holds the indices of neurons (as ordered in datasetSm) that
 % have dF/F above threshold at that time.
 
-num_act_nrns_perframe_nd = zeros(num_frames,1);
+num_act_nrns_perframe = zeros(num_frames,1);
 
 for i = 1:num_frames
     
@@ -44,10 +44,10 @@ for i = 1:num_frames
     act_nrn_inds = find(act_nrns); % Indices of active neurons
     
     % Add the indices of these neurons to S_all.
-    S_all.act_nrns_perframe_nd{i} = act_nrn_inds;
+    S_all.act_nrns_perframe{i} = act_nrn_inds;
 
     % Records the number of active cells at each frame.
-    num_act_nrns_perframe_nd(i) = length(act_nrn_inds);
+    num_act_nrns_perframe(i) = length(act_nrn_inds);
 
 end
 
@@ -67,12 +67,12 @@ end
 % unnecessarily.
 for i = 1:num_frames
 
-    if num_act_nrns_perframe_nd(i) == 0
+    if num_act_nrns_perframe(i) == 0
         
         % Whenever a value of zero is come upon, assign it the avg of the
         % last four values. This works because the loop runs
         % progressively through the data.
-        num_act_nrns_perframe_nd(i) = mean(num_act_nrns_perframe_nd(i-4:i-1));
+        num_act_nrns_perframe(i) = mean(num_act_nrns_perframe(i-4:i-1));
 
     end
 end
@@ -80,7 +80,7 @@ end
 % plot(num_act_nrns_perframe, 'DisplayName', 'PMT-artifact removed')
 
 % Save the number of active neurons per frame to S_all.
-S_all.num_act_nrns_perframe_nd = num_act_nrns_perframe_nd;
+S_all.num_act_nrns_perframe = num_act_nrns_perframe;
 
 %% Detecting SCEs
 % Now a threshold is defined for the number of neurons required to be
@@ -96,7 +96,7 @@ isSCE = zeros(num_frames,1); % Array to hold whether or not an SCE is occuring
 frames_since_SCE = 0; % Counter to record the number of frames between SCEs.
 for i = 1:num_frames
     
-    if num_act_nrns_perframe_nd(i) >= SCE_thres % SCE threshold reached.
+    if num_act_nrns_perframe(i) >= SCE_thres % SCE threshold reached.
 
         if frames_since_SCE < min_SCE_gap % If an SCE occured recently, designates to
             % previous SCE.
@@ -117,8 +117,8 @@ S_all.isSCE = isSCE;
 
 figure;
 hold on;
-plot(num_act_nrns_perframe_nd, 'DisplayName', '# nrns')
-plot(zeros(size(num_act_nrns_perframe_nd))+SCE_thres, 'DisplayName', 'SCE threshold')
+plot(num_act_nrns_perframe, 'DisplayName', '# nrns')
+plot(zeros(size(num_act_nrns_perframe))+SCE_thres, 'DisplayName', 'SCE threshold')
 plot(isSCE.*35, 'DisplayName', 'isSCE')
 title('SCE Event Detection')
 ylabel('Number of Active Neurons')

@@ -12,11 +12,12 @@ dFF_diffs = diff(dFF_data, 1, 1);
 
 % Plot histogram showing the distribution of differences between adjacent
 % points (see documentation on diff()).
-figure;
-H = histogram(dFF_diffs,500);
-title('Histogram of Slope Between Adjacent Points For All Neurons')
-ylabel('Counts')
-xlabel('Slope')
+% figure;
+% H = histogram(dFF_diffs,500);
+% title('Histogram of Slope Between Adjacent Points For All Neurons')
+% ylabel('Counts')
+% xlabel('Slope')
+
 
 for i = 1:size(dFF_diffs,2) % Loops each neuron.
 
