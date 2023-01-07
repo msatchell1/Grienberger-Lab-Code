@@ -67,7 +67,7 @@
 %
 %
 
-% Directory where both behavioral and fluorescence data is located.
+% Directory where both behavioral and fluorescence data (.tif files) are located.
 data_dir = 'D:\Michael Satchell Rotation\CG004_220307'; % Must be a text scalar; use '' instead of "". 
 % The directory where data from Matlab processing will be saved.
 save_dir = [data_dir, filesep, 'Matlab Data'];
