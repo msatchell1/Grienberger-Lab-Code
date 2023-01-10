@@ -122,7 +122,8 @@ S_all = zero_Ca_decay(S_all);
 % S_all = detect_SCEs(S_all); % Detect synchronous calcium events and store the data in S_all.
 
 S_all = detect_SCEs_nodecay(S_all); % Detect synchronous Ca events using dF/F
-% data without the Ca spike decay portion of the singal.
+% data without the Ca spike decay portion of the singal. Note this function
+% has been adjusted to only search for SCEs during standing periods.
 
 
 

@@ -214,10 +214,8 @@ text(max(xvals_hist)/2,max(yvals_hist),txt);
 
 % The following code searches for SCEs during standing periods.
 
-min_SCE_gap = 3; % The minimum gap allowed between SCEs (imaging frames).
-% The imaging sampling rate is 30 Hz, or 1 image every 33.33 ms. If SWRs
-% last at a maximum 100 ms, then there are only 3 imaging data points per
-% SWR, so min_SCE_gap should not be above 3. 
+min_SCE_gap = 10; % The minimum gap allowed between SCEs (imaging frames).
+% The imaging sampling rate is 30 Hz, or 0.03 , and if SWRs last at a maximum 
 
 isSCE_nd = zeros(length(NAN_perframe_nd),1); % Array to hold whether or not an SCE is occuring 
 % at each time frame.

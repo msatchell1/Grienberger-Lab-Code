@@ -1,7 +1,7 @@
 function [S_all] = noise_dist(S_all, view_fits)
 % Seperates the base noise of dF/F signals from activity by plotting dF/F
-% points on a histogram, than calculates the standard deviation of this
-% noise signal. Does so independently for each neuron.
+% points on a histogram, than calculates the standard deviation and r-squared
+% of the fit to this noise signal. Does so independently for each neuron.
 %
 % Also takes input view_fits. 1 to toggle each gaussian fit, 0 to skip
 % through to the last fit.
