@@ -129,8 +129,31 @@ avg_NAN_shuffle = mean(NAN_shuffles,2);
 
 vel = S_all.wsALL(:,2).*80; % Mouse velocity in cm/s.
 
+% First, the standing frames are identified. The loop method below is
+% extremely slow, but allows to define a minimal time radius with no velocity
+% before points are labeled as standing. Does not complete after ~2 hours
+% of waiting.
 stand_thres = 1; % Everything below this value qualifies as standing (cm/s).
+stand_radius = 3; % Radius (in s) that must also have vel < stand_thres.
+% stand_log = zeros(size(vel)); % logical values, 1 for frames marked as during standing.
+% for i = 1+stand_radius*S_all.acq : length(vel)-stand_radius*S_all.acq
+%     
+%     if vel(i) < stand_thres % If velocity is below threshold.
+%         
+%         % If there are no points within stand_radius number of seconds
+%         % with velocity above stand_thres, then this point is considered to
+%         % occur during standing.
+%         if ~(any(vel(i-(stand_radius*S_all.acq) : i+(stand_radius*S_all.acq)) > stand_thres))
+%             
+%             stand_log(i) = 1; % Assigns point as standing.
+% 
+%         end
+%     end
+% end
+
+% OLD, simple version of defining standing periods:
 stand_log = vel < stand_thres; % Logical array of frames where v < stand_thres cm/s.
+
 stand_inds = find(stand_log); % Indices where v < stand_thres.
 
 % The percentage of frames spent standing
@@ -178,11 +201,13 @@ title("NAN Standing Only Histogram")
 ylabel("Number of Count")
 xlabel("Number of Neurons")
 
-% The first bin holding counts of 1 active neuron is extra large and
+% For CG004_220307: The first bin holding counts of 1 active neuron is extra large and
 % throwing off the fit, so here we only consider the other bins.
-xvals_hist = H.BinEdges(2:end-1)'; % Approximating the left edges of each 
+% For CG005_220307: The first bin is an essential part of the distribution,
+% needs to be included for an accurate std value. 
+xvals_hist = H.BinEdges(1:end-1)'; % Approximating the left edges of each 
 % bin as the location of the bin. 
-yvals_hist = H.Values(2:end)'; % Number of counts in each bin.
+yvals_hist = H.Values(1:end)'; % Number of counts in each bin.
 
 [max_val, max_i] = max(yvals_hist); % Finds the largest bin to center the gaussian around.
 

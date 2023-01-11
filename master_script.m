@@ -1,6 +1,8 @@
 % Master Script for behavioral and Ca imaging data analysis.
 
-% The variables in S (now S_all) are described below:
+
+
+%% The variables in S (now S_all) are described below:
 %
 % S.Running - Animal speed (V) (multiply by 80 to get cm/s).
 % size(S_all.dataset,2); = Number of neuron ROIs
@@ -8,8 +10,6 @@
 % num_ROIs - num_nrns; = Number of neuropil.
 % size(S_all.Running,2); = Number of laps the mouse has run
 % size(S_all.Running,1); = Number of bins each lap is tiled into.
-% 
-
 %
 %
 % S.wsALL(:,1) = lap start (V)
@@ -67,8 +67,12 @@
 %
 %
 
+%% Loading data and initial processing
+% Note: for the CG005_220307 data, I decided to mark out inhibitory cells
+% as neuropil in my suite2p sorting.
+
 % Directory where both behavioral and fluorescence data (.tif files) are located.
-data_dir = 'D:\Michael Satchell Rotation\CG004_220307'; % Must be a text scalar; use '' instead of "". 
+data_dir = 'D:\Michael Satchell Rotation\CG005_220307'; % Must be a text scalar; use '' instead of "". 
 % The directory where data from Matlab processing will be saved.
 save_dir = [data_dir, filesep, 'Matlab Data'];
 

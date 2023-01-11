@@ -54,16 +54,16 @@ for i = 1:num_nrns
     % Adds r-squared from fit to array.
     S_all.dFF_noise_r2(1,i) = round(gofgauss.rsquare,3);
     
-    % Plots each fit individually with R-squared value.
-    yfitdata = gausscurve(min(xvals_hist):H.BinWidth:max(xvals_hist));
-    p = plot(min(xvals_hist):H.BinWidth:max(xvals_hist), yfitdata);
-    p.LineWidth = 1;
-    ylabel("Bin Counts")
-    xlabel("dF/F")
-    title(strcat('dF/F Histogram and Gauss Fit for Cell', num2str(i)));
-    % Add r-squared value to plot.
-    txt = strcat('R^2 = ', num2str(round(gofgauss.rsquare,3)));
-    text(max(xvals_hist)/2,max(yvals_hist),txt);
+%     % Plots each fit individually with R-squared value.
+%     yfitdata = gausscurve(min(xvals_hist):H.BinWidth:max(xvals_hist));
+%     p = plot(min(xvals_hist):H.BinWidth:max(xvals_hist), yfitdata);
+%     p.LineWidth = 1;
+%     ylabel("Bin Counts")
+%     xlabel("dF/F")
+%     title(strcat('dF/F Histogram and Gauss Fit for Cell', num2str(i)));
+%     % Add r-squared value to plot.
+%     txt = strcat('R^2 = ', num2str(round(gofgauss.rsquare,3)));
+%     text(max(xvals_hist)/2,max(yvals_hist),txt);
     
     if view_fits & i > 0
         pause; % Use pause to view each plot.
