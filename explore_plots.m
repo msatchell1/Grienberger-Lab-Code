@@ -8,6 +8,26 @@ num_neu = num_ROIs - num_nrns;
 num_laps = size(S_all.Running,2); % Number of laps the mouse has run
 num_bins = size(S_all.Running,1); % Number of bins each lap is tiled into.
 
+%% Show difference after BRim1_MS processing
+
+for i = 1:1
+    figure();
+    hold on
+    plot(S_all.frametimingOriginal./S_all.acq, S_all.datasetorig(:,i))
+    title(strcat("Unaltered Fluorescence for Cell ", num2str(i)))
+    ylabel("Fluorescence (V)")
+    xlabel("Time (s)")
+end
+
+for i = 1:1
+    figure();
+    hold on
+    plot(S_all.frametimingOriginal./S_all.acq, S_all.datasetSm(:,i))
+    title(strcat("Bleaching/PMT Artifact Corrected Smooth dF/F for Cell ", num2str(i)))
+    ylabel("dF/F")
+    xlabel("Time (s)")
+end
+
 %%
 % figure; 
 % imagesc(transpose(S_all.Running)*80); 
@@ -58,7 +78,7 @@ num_bins = size(S_all.Running,1); % Number of bins each lap is tiled into.
 %% Plot the mouse velocity and single cell fluorescence activity for entire recording.
 
 ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in seconds.
-cellnum = 46; % Cell to plot.
+cellnum = 200; % Cell to plot.
 
 vel_data = S_all.wsALL(:,2); % velocity of entire recording.
 fl_data = S_all.dataset(:,cellnum); % dF/F data for that cell.
@@ -69,14 +89,19 @@ act_thres = S_all.dFF_noise_std(1, cellnum)*3;
 
 figure;
 hold on;
-plot(ws_time_sec, vel_data.*4, 'DisplayName', '4*velocity' )
+
+yyaxis left
+plot(ws_time_sec, vel_data.*80, 'DisplayName', 'velocity' )
+ylabel("Velocity (cm/s)")
+xlabel('Time (s)')
+
+yyaxis right
 plot(S_all.frametimingOriginal./S_all.acq, fl_data_sm, 'DisplayName', 'dF/F smoothed' )
 % plot(S_all.frametimingOriginal./S_all.acq, fl_data, 'DisplayName', 'dF/F' )
-plot([1, ws_time_sec(end)], [act_thres, act_thres], 'DisplayName', 'activity thres')
+% plot([1, ws_time_sec(end)], [act_thres, act_thres], 'DisplayName', 'activity thres')
 title(strcat("Fluorescence for Cell ", num2str(cellnum), " and Mouse Velocity"))
 ylabel("dF/F")
-xlabel('Time (s)')
-legend()
+% legend()
 
 %% Original Fluorescence plots
 
@@ -237,14 +262,14 @@ text(0.25*length(S_all.dFF_noise_r2), 0.9*r2_thres, txt)
 
 %% PLotting frameclock and velocity together
 
-% figure;
-% hold on;
-% plot(ws_time_sec, S_all.wsALL(:,5),'DisplayName', 'frameclock')
-% plot(ws_time_sec, S_all.wsALL(:,2), 'DisplayName', 'velocity')
-% title("Original ws Data for Frameclock and Velocity")
-% xlabel("Time (s)")
-% ylabel('Wavesurfer Readout (V)')
-% legend();
+figure;
+hold on;
+plot(ws_time_sec, S_all.wsALL(:,5),'DisplayName', 'frameclock')
+plot(ws_time_sec, S_all.wsALL(:,2), 'DisplayName', 'velocity')
+title("Original ws Data for Frameclock and Velocity")
+xlabel("Time (s)")
+ylabel('Wavesurfer Readout (V)')
+legend();
 
 %% Plotting num active neurons with velocity
 
@@ -314,7 +339,7 @@ title("Number of Active Neurons and Velocity, No Ca Decay")
 xlabel("Time (s)")
 %% Compare normal smoothed dF/F to no decay dF/F.
 
-cellnum = 300; % Cell to plot.
+cellnum = 100; % Cell to plot.
 
 ws_time_sec = (1:size(S_all.wsALL,1))./S_all.acq; % Gets ws frame times in seconds.
 fl_data_sm = S_all.datasetSm(:,cellnum); % smoothed dF/F data for that cell.

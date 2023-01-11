@@ -1,4 +1,6 @@
 % Master Script for behavioral and Ca imaging data analysis.
+%
+% ------ Michael Satchell 12/01/22 --------
 
 
 
@@ -69,7 +71,8 @@
 
 %% Loading data and initial processing
 % Note: for the CG005_220307 data, I decided to mark out inhibitory cells
-% as neuropil in my suite2p sorting.
+% as neuropil in my suite2p sorting. However this seems to have not done
+% much to help, as there are plenty of inhibitory-ish neurons...
 
 % Directory where both behavioral and fluorescence data (.tif files) are located.
 data_dir = 'D:\Michael Satchell Rotation\CG005_220307'; % Must be a text scalar; use '' instead of "". 
@@ -125,7 +128,7 @@ S_all = zero_Ca_decay(S_all);
 
 % S_all = detect_SCEs(S_all); % Detect synchronous calcium events and store the data in S_all.
 
-S_all = detect_SCEs_nodecay(S_all); % Detect synchronous Ca events using dF/F
+% S_all = detect_SCEs_nodecay(S_all); % Detect synchronous Ca events using dF/F
 % data without the Ca spike decay portion of the singal. Note this function
 % has been adjusted to only search for SCEs during standing periods.
 
